@@ -1,8 +1,8 @@
 // =========================================================
 // FLUX — espace admin (utilise les MÊMES identifiants Supabase que le widget)
 // =========================================================
-const SUPABASE_URL = 'REMPLACE_PAR_TON_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'REMPLACE_PAR_TA_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://bvmovojwwieytjhszkfl.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2bW92b2p3d2lleXRqaHN6a2ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODI5NTUsImV4cCI6MjEwMTc1ODk1NX0.VjVLICZabfq7f2qwiV8RknHjODyjym0lT6viaHFBc7I';
 const ADMIN_EMAIL = 'devt23773@gmail.com';
 // =========================================================
 
