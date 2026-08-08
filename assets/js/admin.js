@@ -3,6 +3,7 @@
 // =========================================================
 // À REMPLIR une fois la fonction "admin" déployée sur Supabase (voir README) :
 const ADMIN_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
+const SUPABASE_ANON_KEY = 'sb_publishable_LJw7_zIoFr5fbRPoiWcK5w_49tNDqZx';
 // =========================================================
 
 (function () {
@@ -20,7 +21,11 @@ const ADMIN_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/ch
   async function callFn(payload) {
     const res = await fetch(ADMIN_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+     'Content-Type': 'application/json',
+     'apikey': SUPABASE_ANON_KEY,
+     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+   },
       body: JSON.stringify({ code: ADMIN_CODE, ...payload }),
     });
     if (res.status === 401) throw new Error('unauthorized');

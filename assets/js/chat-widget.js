@@ -3,6 +3,7 @@
 // =========================================================
 // À REMPLIR une fois la fonction "chat" déployée sur Supabase (voir README) :
 const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
+const SUPABASE_ANON_KEY = 'sb_publishable_LJw7_zIoFr5fbRPoiWcK5w_49tNDqZx';
 // =========================================================
 
 (function () {
@@ -24,7 +25,11 @@ const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/cha
   async function callFn(payload) {
     const res = await fetch(CHAT_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+     'Content-Type': 'application/json',
+     'apikey': SUPABASE_ANON_KEY,
+     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+   },
       body: JSON.stringify({ conversationId, ...payload }),
     });
     return res.json();
