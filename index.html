@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flux — Comprendre la transition énergétique</title>
+<meta name="description" content="Flux vous explique simplement les voitures électriques, les panneaux solaires et les économies d'énergie.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/home.css">
+<link rel="stylesheet" href="assets/css/intro.css">
+</head>
+<body>
+
+<!-- ============ INTRO ANIMATION ============ -->
+<div id="intro" class="intro" aria-hidden="true">
+  <div class="intro__brand">Flux<span>.</span></div>
+  <button id="introSkip" class="intro__skip">Passer l'intro</button>
+
+  <div class="intro__stage">
+
+    <!-- ACT 1 — voiture en bâtons 3D qui accélère sur la route -->
+    <div class="intro__scene intro__scene--car" data-scene="1">
+      <div class="road"></div>
+      <div class="car3d" id="car3d">
+        <span class="car-bar car-bar--1"></span>
+        <span class="car-bar car-bar--2"></span>
+        <span class="car-bar car-bar--3"></span>
+        <span class="car-bar car-bar--4"></span>
+        <span class="car-bar car-bar--5"></span>
+        <span class="car-bar car-bar--6"></span>
+        <span class="car-bar car-bar--7"></span>
+        <span class="wheel wheel--front"><span class="wheel__spoke"></span></span>
+        <span class="wheel wheel--rear"><span class="wheel__spoke"></span></span>
+        <span class="car-trail"></span>
+      </div>
+    </div>
+
+    <!-- ACT 2 — panneaux solaires en bâtons 3D qui se déploient -->
+    <div class="intro__scene intro__scene--solar" data-scene="2">
+      <div class="sunray"></div>
+      <div class="panel-row" id="panelRow">
+        <div class="panel3d" style="--d:0">
+          <span class="panel-bar panel-bar--top"></span>
+          <span class="panel-bar panel-bar--bottom"></span>
+          <span class="panel-bar panel-bar--left"></span>
+          <span class="panel-bar panel-bar--right"></span>
+          <span class="panel-bar panel-bar--vmid"></span>
+          <span class="panel-bar panel-bar--hmid"></span>
+          <span class="panel-leg"></span>
+        </div>
+        <div class="panel3d" style="--d:1">
+          <span class="panel-bar panel-bar--top"></span>
+          <span class="panel-bar panel-bar--bottom"></span>
+          <span class="panel-bar panel-bar--left"></span>
+          <span class="panel-bar panel-bar--right"></span>
+          <span class="panel-bar panel-bar--vmid"></span>
+          <span class="panel-bar panel-bar--hmid"></span>
+          <span class="panel-leg"></span>
+        </div>
+        <div class="panel3d" style="--d:2">
+          <span class="panel-bar panel-bar--top"></span>
+          <span class="panel-bar panel-bar--bottom"></span>
+          <span class="panel-bar panel-bar--left"></span>
+          <span class="panel-bar panel-bar--right"></span>
+          <span class="panel-bar panel-bar--vmid"></span>
+          <span class="panel-bar panel-bar--hmid"></span>
+          <span class="panel-leg"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACT 3 — graphique en bâtons 3D qui ne fait que monter -->
+    <div class="intro__scene intro__scene--chart" data-scene="3">
+      <div class="chart3d">
+        <div class="bar3d"><span class="bar3d__rod" style="--h:28%"></span></div>
+        <div class="bar3d"><span class="bar3d__rod" style="--h:46%"></span></div>
+        <div class="bar3d"><span class="bar3d__rod" style="--h:62%"></span></div>
+        <div class="bar3d"><span class="bar3d__rod" style="--h:81%"></span></div>
+        <div class="bar3d"><span class="bar3d__rod" style="--h:100%"></span></div>
+      </div>
+      <div class="chart3d__baseline"></div>
+    </div>
+
+  </div>
+
+  <div class="intro__dots">
+    <span class="intro__dot" data-dot="1"></span>
+    <span class="intro__dot" data-dot="2"></span>
+    <span class="intro__dot" data-dot="3"></span>
+  </div>
+</div>
+
+
+<nav class="nav">
+  <a href="index.html" class="nav__brand"><span class="nav__mark"></span>Flux<span>.</span></a>
+  <ul class="nav__links">
+    <li><a href="voitures-electriques.html">Voitures électriques</a></li>
+    <li><a href="panneaux-solaires.html">Panneaux solaires</a></li>
+    <li><a href="economies-energie.html">Économies d'énergie</a></li>
+  </ul>
+  <a href="economies-energie.html#calc" class="nav__cta">Estimer mes économies</a>
+  <button class="nav__toggle" aria-label="menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<header class="home-hero" data-nav="dark">
+  <canvas id="fieldCanvas"></canvas>
+  <div class="home-hero__inner container">
+    <span class="eyebrow">Guide de la transition énergétique</span>
+    <h1 class="home-hero__title">L'énergie qui vient,<br>expliquée <em>simplement</em>.</h1>
+    <p class="home-hero__lede">Trois sujets, une seule question : comment consommer mieux ? Flux décrypte les voitures électriques, le solaire et les économies d'énergie sans jargon — juste des faits, des chiffres, et des choix concrets.</p>
+    <div class="home-hero__cta">
+      <a href="voitures-electriques.html" class="btn btn-primary">Commencer la lecture</a>
+      <a href="#sujets" class="btn btn-ghost">Voir les 3 sujets</a>
+    </div>
+  </div>
+  <div class="home-hero__scroll">Défiler <span></span></div>
+</header>
+
+<!-- TOPIC CARDS -->
+<section class="section topics" id="sujets" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--ink); ">
+        <span style="background:var(--ink)" class="dot"></span>
+      </span>
+      <h2 class="kicker">Trois entrées, un seul fil conducteur : le courant.</h2>
+      <p class="lede">Chaque page se lit en quelques minutes et va droit au but.</p>
+    </div>
+
+    <div class="topics__grid">
+      <a href="voitures-electriques.html" class="topic-card topic-card--cars reveal">
+        <div class="topic-card__visual"><div class="pulse-line"></div></div>
+        <div class="topic-card__body">
+          <span class="tag">01 — Mobilité</span>
+          <h3>Voitures électriques</h3>
+          <p>Autonomie, recharge, coûts réels et impact carbone : ce qui change vraiment au volant.</p>
+          <span class="topic-card__link">Lire →</span>
+        </div>
+      </a>
+
+      <a href="panneaux-solaires.html" class="topic-card topic-card--solar reveal">
+        <div class="topic-card__visual"><div class="sun-dot"></div></div>
+        <div class="topic-card__body">
+          <span class="tag">02 — Production</span>
+          <h3>Panneaux solaires</h3>
+          <p>Comment un rayon de soleil devient de l'électricité chez vous, et à quel prix.</p>
+          <span class="topic-card__link">Lire →</span>
+        </div>
+      </a>
+
+      <a href="economies-energie.html" class="topic-card topic-card--save reveal">
+        <div class="topic-card__visual"><div class="bar-mini"></div></div>
+        <div class="topic-card__body">
+          <span class="tag">03 — Consommation</span>
+          <h3>Économies d'énergie</h3>
+          <p>Les gestes et investissements qui font vraiment baisser une facture — classés par impact.</p>
+          <span class="topic-card__link">Lire →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- STAT BAND -->
+<section class="section-tight section-dark stat-band" data-nav="dark">
+  <div class="container stat-band__grid">
+    <div class="reveal">
+      <div class="stat-num" data-count="55" data-suffix="%">0%</div>
+      <div class="stat-label">des émissions d'un foyer proviennent du logement et de la voiture</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="4" data-suffix="x">0x</div>
+      <div class="stat-label">rendement énergétique moyen d'une pompe à chaleur vs un chauffage électrique classique</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="70" data-suffix="%">0%</div>
+      <div class="stat-label">de coût en moins au km pour un véhicule électrique rechargé à domicile</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="25" data-suffix=" ans">0 ans</div>
+      <div class="stat-label">durée de vie garantie d'un panneau solaire aujourd'hui</div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="section approach" data-nav="light">
+  <div class="container grid-2">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Notre approche</span>
+      <h2 class="kicker" style="color:var(--ink)">Pas de discours militant. Des chiffres qu'on peut vérifier.</h2>
+    </div>
+    <div class="reveal approach__list">
+      <div class="approach__item">
+        <span class="approach__num">01</span>
+        <div><h4>Sources publiques</h4><p>ADEME, RTE, constructeurs : chaque donnée cite son origine.</p></div>
+      </div>
+      <div class="approach__item">
+        <span class="approach__num">02</span>
+        <div><h4>Cas concrets</h4><p>Des exemples chiffrés plutôt que des promesses vagues.</p></div>
+      </div>
+      <div class="approach__item">
+        <span class="approach__num">03</span>
+        <div><h4>Zéro vente</h4><p>On explique, on ne vous vend rien — pas de devis, pas de pub.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">Flux<span style="color:var(--accent)">.</span></div>
+      <div class="footer__nav">
+        <div>
+          <h4>Sujets</h4>
+          <a href="voitures-electriques.html">Voitures électriques</a>
+          <a href="panneaux-solaires.html">Panneaux solaires</a>
+          <a href="economies-energie.html">Économies d'énergie</a>
+        </div>
+        <div>
+          <h4>Flux</h4>
+          <a href="index.html">Accueil</a>
+          <a href="#sujets">Les 3 sujets</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> Flux — Contenu informatif, ne remplace pas un avis professionnel.</span>
+      <span>Fait avec un fond d'écran solaire ☀︎</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/home.js"></script>
+<script src="assets/js/intro.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voitures électriques — Flux</title>
+<meta name="description" content="Autonomie, recharge, coûts et impact environnemental des voitures électriques, expliqués simplement.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/cars.css">
+</head>
+<body class="theme-cars">
+
+<nav class="nav">
+  <a href="index.html" class="nav__brand"><span class="nav__mark"></span>Flux<span>.</span></a>
+  <ul class="nav__links">
+    <li><a href="voitures-electriques.html" class="is-active">Voitures électriques</a></li>
+    <li><a href="panneaux-solaires.html">Panneaux solaires</a></li>
+    <li><a href="economies-energie.html">Économies d'énergie</a></li>
+  </ul>
+  <a href="economies-energie.html#calc" class="nav__cta">Estimer mes économies</a>
+  <button class="nav__toggle" aria-label="menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<header class="cars-hero" data-nav="dark">
+  <canvas id="roadCanvas"></canvas>
+  <div class="cars-hero__inner container">
+    <span class="eyebrow">01 — Mobilité électrique</span>
+    <h1 class="cars-hero__title">Rouler au courant,<br>pas à l'essence.</h1>
+    <p class="cars-hero__lede">Autonomie réelle, temps de recharge, coût au kilomètre : ce qui change concrètement quand une voiture passe à l'électrique.</p>
+    <div class="home-hero__cta">
+      <a href="#autonomie" class="btn btn-primary">Voir l'autonomie</a>
+      <a href="#idees-recues" class="btn btn-ghost">Idées reçues</a>
+    </div>
+  </div>
+</header>
+
+<!-- INTRO STATS -->
+<section class="section-tight section-dark" data-nav="dark">
+  <div class="container stat-band__grid">
+    <div class="reveal">
+      <div class="stat-num" data-count="2.6" data-suffix="€">0€</div>
+      <div class="stat-label">coût moyen pour 100 km en électrique rechargé la nuit chez soi</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="9.5" data-suffix="€">0€</div>
+      <div class="stat-label">coût moyen pour 100 km avec une citadine essence</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="2" data-suffix=" ans">0 ans</div>
+      <div class="stat-label">seuil moyen où le CO₂ de fabrication est compensé par le roulage</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="180" data-suffix="k km">0k km</div>
+      <div class="stat-label">durée de vie moyenne annoncée d'une batterie avant 70% de capacité</div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTONOMIE / RECHARGE -->
+<section class="section" id="autonomie" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Autonomie & recharge</span>
+      <h2 class="kicker" style="color:var(--ink)">Trois vitesses de recharge, trois usages.</h2>
+      <p class="lede" style="color:var(--mist-dark)">Le temps de charge dépend uniquement de la puissance de la borne — pas de la voiture.</p>
+    </div>
+
+    <div class="charge-grid reveal reveal-stagger">
+      <div class="charge-card" style="--i:0">
+        <div class="charge-card__icon charge-card__icon--slow"></div>
+        <span class="tag">Charge lente · 2,3 kW</span>
+        <h3>Prise domestique</h3>
+        <p>Une nuit complète pour ~130 km d'autonomie. Idéal si la voiture dort toujours au même endroit.</p>
+        <div class="charge-card__time">≈ 12–15 h <span>pour 100%</span></div>
+      </div>
+      <div class="charge-card" style="--i:1">
+        <div class="charge-card__icon charge-card__icon--normal"></div>
+        <span class="tag">Charge normale · 7–22 kW</span>
+        <h3>Borne murale (Wallbox)</h3>
+        <p>Installée à domicile ou au travail, elle recharge une batterie complète pendant les heures creuses.</p>
+        <div class="charge-card__time">≈ 3–8 h <span>pour 100%</span></div>
+      </div>
+      <div class="charge-card" style="--i:2">
+        <div class="charge-card__icon charge-card__icon--fast"></div>
+        <span class="tag">Charge rapide · 50–350 kW</span>
+        <h3>Borne autoroute</h3>
+        <p>Pensée pour les longs trajets : une pause café suffit pour retrouver l'essentiel de l'autonomie.</p>
+        <div class="charge-card__time">≈ 20–35 min <span>pour 10→80%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BATTERY VISUAL -->
+<section class="section-tight battery-section" data-nav="light">
+  <div class="container grid-2">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Ce que dit vraiment l'autonomie</span>
+      <h2 class="kicker" style="color:var(--ink)">Les chiffres constructeurs, et la réalité de la route.</h2>
+      <p class="lede" style="color:var(--mist-dark)">L'autonomie WLTP (norme officielle) baisse en usage réel selon la vitesse, la météo et le style de conduite.</p>
+      <ul class="battery-legend">
+        <li><span class="dot dot--full"></span>Autonomie annoncée (WLTP)</li>
+        <li><span class="dot dot--real"></span>Autonomie réelle observée</li>
+      </ul>
+    </div>
+    <div class="reveal battery-compare">
+      <div class="battery-row">
+        <span>Ville, 30 km/h moy.</span>
+        <div class="battery-bar"><div class="battery-bar__fill" style="width:100%"></div><div class="battery-bar__real" style="width:96%"></div></div>
+      </div>
+      <div class="battery-row">
+        <span>Route, 90 km/h moy.</span>
+        <div class="battery-bar"><div class="battery-bar__fill" style="width:100%"></div><div class="battery-bar__real" style="width:80%"></div></div>
+      </div>
+      <div class="battery-row">
+        <span>Autoroute, 130 km/h</span>
+        <div class="battery-bar"><div class="battery-bar__fill" style="width:100%"></div><div class="battery-bar__real" style="width:62%"></div></div>
+      </div>
+      <div class="battery-row">
+        <span>Hiver, &lt; 0°C</span>
+        <div class="battery-bar"><div class="battery-bar__fill" style="width:100%"></div><div class="battery-bar__real" style="width:70%"></div></div>
+      </div>
+      <p class="battery-note">Ordres de grandeur pédagogiques — variables selon le modèle et la charge du véhicule.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IDÉES REÇUES -->
+<section class="section section-dark" id="idees-recues" data-nav="dark">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow">Idées reçues</span>
+      <h2 class="kicker">Ce qu'on entend souvent — et ce qu'il en est.</h2>
+    </div>
+
+    <div class="faq reveal reveal-stagger">
+      <details class="faq__item" style="--i:0" open>
+        <summary>« Les batteries polluent plus qu'elles ne sauvent »</summary>
+        <p>La fabrication d'une batterie a un coût carbone réel, mais il est compensé après 15 000 à 30 000 km selon le mix électrique du pays — puis chaque kilomètre roulé émet nettement moins qu'un moteur thermique.</p>
+      </details>
+      <details class="faq__item" style="--i:1">
+        <summary>« L'autonomie ne suffit pas pour les longs trajets »</summary>
+        <p>Le réseau de charge rapide s'est largement densifié sur les grands axes ; une pause de 20-30 minutes toutes les 2-3 heures reste comparable au rythme naturel d'un long trajet.</p>
+      </details>
+      <details class="faq__item" style="--i:2">
+        <summary>« Le réseau électrique ne suivra pas »</summary>
+        <p>Les gestionnaires de réseau anticipent la hausse de la demande ; la recharge se fait majoritairement la nuit, quand la consommation globale est la plus basse.</p>
+      </details>
+      <details class="faq__item" style="--i:3">
+        <summary>« C'est trop cher à l'achat »</summary>
+        <p>Le prix d'achat reste souvent supérieur, mais l'écart se réduit à l'usage grâce au carburant et à l'entretien moins coûteux (moins de pièces d'usure, pas de vidange).</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS LINK -->
+<section class="section-tight crosslink" data-nav="light">
+  <div class="container crosslink__grid">
+    <a href="panneaux-solaires.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(255,176,32,.12); color:#c97e0a">Suite logique</span>
+      <h3>Recharger avec le soleil</h3>
+      <p>Combinez panneaux solaires et voiture électrique pour rouler à l'énergie produite chez vous.</p>
+      <span class="topic-card__link">Découvrir le solaire →</span>
+    </a>
+    <a href="economies-energie.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(47,212,140,.12); color:#1b9f6b">À lire aussi</span>
+      <h3>Réduire sa facture globale</h3>
+      <p>La voiture n'est qu'une partie de l'équation énergétique du foyer.</p>
+      <span class="topic-card__link">Voir les économies →</span>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">Flux<span style="color:var(--accent)">.</span></div>
+      <div class="footer__nav">
+        <div>
+          <h4>Sujets</h4>
+          <a href="voitures-electriques.html">Voitures électriques</a>
+          <a href="panneaux-solaires.html">Panneaux solaires</a>
+          <a href="economies-energie.html">Économies d'énergie</a>
+        </div>
+        <div>
+          <h4>Flux</h4>
+          <a href="index.html">Accueil</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> Flux — Contenu informatif, ne remplace pas un avis professionnel.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/cars.js"></script>
+</body>
+</html>

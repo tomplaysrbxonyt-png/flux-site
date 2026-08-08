@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Économies d'énergie — Flux</title>
+<meta name="description" content="Les gestes et investissements qui réduisent vraiment une facture d'énergie, classés par impact.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/savings.css">
+</head>
+<body class="theme-save">
+
+<nav class="nav">
+  <a href="index.html" class="nav__brand"><span class="nav__mark"></span>Flux<span>.</span></a>
+  <ul class="nav__links">
+    <li><a href="voitures-electriques.html">Voitures électriques</a></li>
+    <li><a href="panneaux-solaires.html">Panneaux solaires</a></li>
+    <li><a href="economies-energie.html" class="is-active">Économies d'énergie</a></li>
+  </ul>
+  <a href="#calc" class="nav__cta">Estimer mes économies</a>
+  <button class="nav__toggle" aria-label="menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<header class="save-hero" data-nav="dark">
+  <canvas id="graphCanvas"></canvas>
+  <div class="cars-hero__inner container">
+    <span class="eyebrow">03 — Consommation</span>
+    <h1 class="cars-hero__title">Chaque geste compte,<br>mais pas de la même façon.</h1>
+    <p class="cars-hero__lede">Du réglage gratuit à l'investissement sur 10 ans : voici les leviers classés par impact réel sur la facture.</p>
+    <div class="home-hero__cta">
+      <a href="#classement" class="btn btn-primary">Voir le classement</a>
+      <a href="#calc" class="btn btn-ghost">Estimer mes économies</a>
+    </div>
+  </div>
+</header>
+
+<!-- INTRO STATS -->
+<section class="section-tight section-dark" data-nav="dark">
+  <div class="container stat-band__grid">
+    <div class="reveal">
+      <div class="stat-num" data-count="1" data-suffix="°C">0°C</div>
+      <div class="stat-label">de moins au thermostat = environ 7% de consommation de chauffage en moins</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="30" data-suffix="%">0%</div>
+      <div class="stat-label">de la facture d'un logement mal isolé part par le toit et les murs</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="10" data-suffix="%">0%</div>
+      <div class="stat-label">d'électricité économisée en passant l'éclairage classique en LED</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="80" data-suffix="€">0€</div>
+      <div class="stat-label">économisés par an rien qu'en traquant la veille des appareils</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSEMENT -->
+<section class="section" id="classement" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Classement par impact</span>
+      <h2 class="kicker" style="color:var(--ink)">Du geste gratuit à l'investissement lourd.</h2>
+      <p class="lede" style="color:var(--mist-dark)">Classement indicatif, du plus rapide à rentabiliser au plus long terme.</p>
+    </div>
+
+    <div class="rank-list reveal reveal-stagger">
+      <div class="rank-item" style="--i:0">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">Immédiat</span>
+          <h3>Baisser le chauffage de 1°C</h3>
+          <span class="rank-item__cost">0 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:70%"></div></div>
+      </div>
+      <div class="rank-item" style="--i:1">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">Immédiat</span>
+          <h3>Couper la veille des appareils</h3>
+          <span class="rank-item__cost">0 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:35%"></div></div>
+      </div>
+      <div class="rank-item" style="--i:2">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">&lt; 50 €</span>
+          <h3>Passer l'éclairage en LED</h3>
+          <span class="rank-item__cost">~40 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:45%"></div></div>
+      </div>
+      <div class="rank-item" style="--i:3">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">200–800 €</span>
+          <h3>Purger et régler le chauffage</h3>
+          <span class="rank-item__cost">~400 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:55%"></div></div>
+      </div>
+      <div class="rank-item" style="--i:4">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">Investissement</span>
+          <h3>Isoler combles et murs</h3>
+          <span class="rank-item__cost">3 000–9 000 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:95%"></div></div>
+      </div>
+      <div class="rank-item" style="--i:5">
+        <div class="rank-item__head">
+          <span class="rank-item__badge">Investissement</span>
+          <h3>Remplacer par une pompe à chaleur</h3>
+          <span class="rank-item__cost">8 000–15 000 €</span>
+        </div>
+        <div class="rank-bar"><div class="rank-bar__fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="section section-dark calc-section" id="calc" data-nav="dark">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow">Estimation rapide</span>
+      <h2 class="kicker">Cochez ce que vous faites déjà — voyez le reste.</h2>
+      <p class="lede">Ordres de grandeur annuels pour un logement moyen, à ajuster selon votre situation réelle.</p>
+    </div>
+
+    <div class="calc reveal">
+      <ul class="calc__list" id="calcList">
+        <li data-value="45"><label><input type="checkbox"><span class="calc__check"></span> Baisser le chauffage de 1°C l'hiver</label><span class="calc__amount">45 €/an</span></li>
+        <li data-value="25"><label><input type="checkbox"><span class="calc__check"></span> Couper la veille des appareils le soir</label><span class="calc__amount">25 €/an</span></li>
+        <li data-value="60"><label><input type="checkbox"><span class="calc__check"></span> Remplacer l'éclairage restant par des LED</label><span class="calc__amount">60 €/an</span></li>
+        <li data-value="35"><label><input type="checkbox"><span class="calc__check"></span> Laver le linge à basse température</label><span class="calc__amount">35 €/an</span></li>
+        <li data-value="90"><label><input type="checkbox"><span class="calc__check"></span> Purger les radiateurs et régler la chaudière</label><span class="calc__amount">90 €/an</span></li>
+        <li data-value="120"><label><input type="checkbox"><span class="calc__check"></span> Poser des joints et rideaux thermiques</label><span class="calc__amount">120 €/an</span></li>
+      </ul>
+      <div class="calc__total">
+        <span>Économie estimée</span>
+        <strong id="calcTotal">0 €<small>/an</small></strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Idées reçues</span>
+      <h2 class="kicker" style="color:var(--ink)">Ce qu'on entend souvent sur les économies d'énergie.</h2>
+    </div>
+    <div class="faq reveal reveal-stagger">
+      <details class="faq__item" style="--i:0" open>
+        <summary>« Éteindre-rallumer consomme plus qu'un mode veille »</summary>
+        <p>C'est vrai pour certains éclairages fluorescents anciens, mais faux pour les LED et l'essentiel des appareils électroniques modernes : couper reste toujours plus économe.</p>
+      </details>
+      <details class="faq__item" style="--i:1">
+        <summary>« L'isolation coûte plus cher qu'elle ne rapporte »</summary>
+        <p>Le retour sur investissement dépasse souvent 10 ans sans aide, mais les dispositifs publics (MaPrimeRénov', CEE) réduisent fortement ce délai.</p>
+      </details>
+      <details class="faq__item" style="--i:2">
+        <summary>« Changer de chauffage ne change pas grand-chose »</summary>
+        <p>Une pompe à chaleur produit en moyenne 3 à 4 fois plus de chaleur que l'électricité qu'elle consomme, contre un rendement proche de 1 pour un chauffage électrique classique.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS LINK -->
+<section class="section-tight crosslink" data-nav="light">
+  <div class="container crosslink__grid">
+    <a href="panneaux-solaires.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(255,176,32,.12); color:#c97e0a">À combiner</span>
+      <h3>Produire une partie de son énergie</h3>
+      <p>Après avoir réduit sa consommation, le solaire devient encore plus rentable.</p>
+      <span class="topic-card__link">Voir le solaire →</span>
+    </a>
+    <a href="voitures-electriques.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(61,139,255,.12); color:#2b6fd6">À lire aussi</span>
+      <h3>Le poste mobilité</h3>
+      <p>La voiture représente souvent le deuxième poste de dépense énergétique du foyer.</p>
+      <span class="topic-card__link">Voir les voitures électriques →</span>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">Flux<span style="color:var(--accent)">.</span></div>
+      <div class="footer__nav">
+        <div>
+          <h4>Sujets</h4>
+          <a href="voitures-electriques.html">Voitures électriques</a>
+          <a href="panneaux-solaires.html">Panneaux solaires</a>
+          <a href="economies-energie.html">Économies d'énergie</a>
+        </div>
+        <div>
+          <h4>Flux</h4>
+          <a href="index.html">Accueil</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> Flux — Contenu informatif, ne remplace pas un avis professionnel.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/savings.js"></script>
+</body>
+</html>

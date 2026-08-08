@@ -1,0 +1,62 @@
+.theme-cars{ --accent: #3D8BFF; --accent-soft: #7AB8FF; --accent-dim: rgba(61,139,255,.14); }
+
+.cars-hero{
+  position: relative;
+  min-height: 92vh;
+  background: var(--ink);
+  color: var(--paper);
+  display:flex; align-items:flex-end;
+  overflow:hidden;
+}
+#roadCanvas{ position:absolute; inset:0; width:100%; height:100%; }
+.cars-hero__inner{ position:relative; z-index:2; padding-bottom: 100px; padding-top: 140px; }
+.cars-hero__title{ font-size: clamp(40px,6.4vw,84px); margin-top: 20px; max-width: 16ch; }
+.cars-hero__lede{ font-size: 17.5px; color: var(--mist); max-width: 50ch; margin-top: 22px; }
+
+/* ---- charge cards ---- */
+.charge-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-top: 46px; }
+@media (max-width: 900px){ .charge-grid{ grid-template-columns: 1fr; } }
+.charge-card{
+  background: #fff; border: 1px solid var(--line-dark); border-radius: 20px; padding: 28px;
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.charge-card:hover{ transform: translateY(-6px); box-shadow: 0 24px 50px -30px rgba(0,0,0,.22); }
+.charge-card h3{ font-size: 20px; margin: 12px 0 8px; color: var(--ink); }
+.charge-card p{ color: var(--mist-dark); font-size: 14px; }
+.charge-card__icon{ width: 40px; height: 40px; border-radius: 10px; margin-bottom: 14px; position: relative; overflow: hidden; }
+.charge-card__icon--slow{ background: linear-gradient(135deg,#c9d3e0,#8a95a6); }
+.charge-card__icon--normal{ background: linear-gradient(135deg, var(--accent-soft), var(--accent)); }
+.charge-card__icon--fast{ background: linear-gradient(135deg,#FFD37A,#FFB020); }
+.charge-card__icon::after{
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: iconShine 2.6s ease-in-out infinite;
+}
+@keyframes iconShine{ 60%{ transform: translateX(-100%); } 100%{ transform: translateX(100%); } }
+.charge-card__time{
+  margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-dark);
+  font-family: var(--f-mono); font-size: 15px; color: var(--ink);
+}
+.charge-card__time span{ display:block; font-size: 11.5px; color: var(--mist-dark); margin-top: 2px; font-family: var(--f-body); }
+
+/* ---- battery compare ---- */
+.battery-legend{ display:flex; gap: 22px; margin-top: 24px; }
+.battery-legend li{ display:flex; align-items:center; gap:8px; font-size: 13.5px; color: var(--mist-dark); }
+.dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.dot--full{ background: var(--line-dark); border: 1px solid #c9c6bd; }
+.dot--real{ background: var(--accent); }
+
+.battery-row{ margin-bottom: 20px; }
+.battery-row > span{ font-size: 13.5px; color: var(--mist-dark); display:block; margin-bottom: 8px; }
+.battery-bar{
+  position: relative; height: 14px; border-radius: 8px; background: var(--paper-2); overflow:hidden;
+}
+.battery-bar__fill{ position:absolute; inset:0; background: var(--paper-2); }
+.battery-bar__real{
+  position:absolute; inset:0; background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  border-radius: 8px;
+  transform-origin: left;
+  animation: growBar 1.4s var(--ease) both;
+}
+.battery-note{ font-size: 12.5px; color: var(--mist-dark); margin-top: 6px; }

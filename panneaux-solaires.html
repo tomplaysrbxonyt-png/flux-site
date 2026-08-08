@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panneaux solaires — Flux</title>
+<meta name="description" content="Comment fonctionne un panneau solaire, son rendement réel et les aides disponibles en France.">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/solar.css">
+</head>
+<body class="theme-solar">
+
+<nav class="nav">
+  <a href="index.html" class="nav__brand"><span class="nav__mark"></span>Flux<span>.</span></a>
+  <ul class="nav__links">
+    <li><a href="voitures-electriques.html">Voitures électriques</a></li>
+    <li><a href="panneaux-solaires.html" class="is-active">Panneaux solaires</a></li>
+    <li><a href="economies-energie.html">Économies d'énergie</a></li>
+  </ul>
+  <a href="economies-energie.html#calc" class="nav__cta">Estimer mes économies</a>
+  <button class="nav__toggle" aria-label="menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<header class="solar-hero" data-nav="dark">
+  <canvas id="sunCanvas"></canvas>
+  <div class="cars-hero__inner container">
+    <span class="eyebrow">02 — Production d'énergie</span>
+    <h1 class="cars-hero__title">Un rayon de soleil,<br>transformé chez vous.</h1>
+    <p class="cars-hero__lede">De la lumière captée sur le toit à l'électricité utilisée dans la maison : comment ça marche, combien ça rapporte, et à quelles conditions.</p>
+    <div class="home-hero__cta">
+      <a href="#fonctionnement" class="btn btn-primary">Comment ça marche</a>
+      <a href="#aides" class="btn btn-ghost">Voir les aides</a>
+    </div>
+  </div>
+</header>
+
+<!-- INTRO STATS -->
+<section class="section-tight section-dark" data-nav="dark">
+  <div class="container stat-band__grid">
+    <div class="reveal">
+      <div class="stat-num" data-count="25" data-suffix=" ans">0 ans</div>
+      <div class="stat-label">durée de vie garantie, avec ~85% de rendement conservé</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="9" data-suffix=" ans">0 ans</div>
+      <div class="stat-label">temps moyen pour amortir une installation en autoconsommation</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="1100" data-suffix=" kWh">0 kWh</div>
+      <div class="stat-label">production annuelle moyenne par kWc installé en France</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num" data-count="1" data-suffix=" à 2 ans">0</div>
+      <div class="stat-label">énergie qu'un panneau met à rembourser celle utilisée pour sa fabrication</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="section" id="fonctionnement" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Le trajet de l'énergie</span>
+      <h2 class="kicker" style="color:var(--ink)">Du photon à la prise, en quatre étapes.</h2>
+      <p class="lede" style="color:var(--mist-dark)">Une vraie chaîne technique, dans l'ordre où l'énergie circule réellement.</p>
+    </div>
+
+    <div class="steps reveal reveal-stagger">
+      <div class="step" style="--i:0">
+        <span class="step__num">01</span>
+        <h3>Captation</h3>
+        <p>Les cellules photovoltaïques du panneau absorbent les photons de la lumière du soleil, même par ciel voilé.</p>
+      </div>
+      <div class="step" style="--i:1">
+        <span class="step__num">02</span>
+        <h3>Courant continu</h3>
+        <p>L'énergie captée génère un courant continu (DC), proportionnel à l'intensité lumineuse reçue.</p>
+      </div>
+      <div class="step" style="--i:2">
+        <span class="step__num">03</span>
+        <h3>Onduleur</h3>
+        <p>L'onduleur convertit ce courant continu en courant alternatif (AC), compatible avec les appareils du logement.</p>
+      </div>
+      <div class="step" style="--i:3">
+        <span class="step__num">04</span>
+        <h3>Usage ou réseau</h3>
+        <p>L'électricité est consommée sur place en priorité ; le surplus est injecté sur le réseau ou stocké en batterie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORIENTATION -->
+<section class="section-tight orientation-section" data-nav="light">
+  <div class="container grid-2">
+    <div class="reveal orientation-visual">
+      <div class="compass">
+        <div class="compass__panel compass__panel--south">Sud<span>100%</span></div>
+        <div class="compass__panel compass__panel--se">Sud-Est / Sud-Ouest<span>90–95%</span></div>
+        <div class="compass__panel compass__panel--east">Est / Ouest<span>75–85%</span></div>
+        <div class="compass__panel compass__panel--flat">Toit plat, mal incliné<span>60–70%</span></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Orientation & rendement</span>
+      <h2 class="kicker" style="color:var(--ink)">L'orientation du toit change tout le calcul.</h2>
+      <p class="lede" style="color:var(--mist-dark)">Une inclinaison de 30 à 35° plein sud reste la référence en France métropolitaine ; les écarts restent exploitables mais réduisent la production annuelle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AIDES -->
+<section class="section section-dark" id="aides" data-nav="dark">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow">Aides en France</span>
+      <h2 class="kicker">Trois dispositifs à connaître avant de se lancer.</h2>
+    </div>
+    <div class="grid-3 reveal reveal-stagger" style="margin-top:44px">
+      <div class="card" style="--i:0">
+        <span class="tag">Prime</span>
+        <h3 style="margin-top:14px;font-size:19px">Prime à l'autoconsommation</h3>
+        <p class="mist" style="margin-top:10px;font-size:14.5px">Versée par EDF OA sur 5 ans pour les installations de moins de 100 kWc revendant leur surplus.</p>
+      </div>
+      <div class="card" style="--i:1">
+        <span class="tag">Fiscalité</span>
+        <h3 style="margin-top:14px;font-size:19px">TVA réduite à 10%</h3>
+        <p class="mist" style="margin-top:10px;font-size:14.5px">Applicable aux installations résidentielles de petite puissance, sous conditions de puissance et d'usage.</p>
+      </div>
+      <div class="card" style="--i:2">
+        <span class="tag">Rachat</span>
+        <h3 style="margin-top:14px;font-size:19px">Obligation d'achat</h3>
+        <p class="mist" style="margin-top:10px;font-size:14.5px">Le surplus non consommé peut être racheté à un tarif garanti sur 20 ans par contrat avec EDF OA.</p>
+      </div>
+    </div>
+    <p class="aides-note mist">Montants et conditions évoluent régulièrement — à vérifier auprès des organismes officiels (ADEME, service-public.fr) avant tout projet.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" data-nav="light">
+  <div class="container">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--mist-dark)">Idées reçues</span>
+      <h2 class="kicker" style="color:var(--ink)">Ce qu'on entend souvent sur le solaire.</h2>
+    </div>
+    <div class="faq reveal reveal-stagger" style="--accent:#c97e0a">
+      <details class="faq__item" style="--i:0" open>
+        <summary>« Ça ne marche pas quand il fait gris »</summary>
+        <p>Les panneaux produisent aussi par ciel couvert, avec un rendement réduit de 10 à 25% selon la luminosité — ils ne s'arrêtent pas, ils ralentissent.</p>
+      </details>
+      <details class="faq__item" style="--i:1">
+        <summary>« Il faut plein sud sinon ce n'est pas rentable »</summary>
+        <p>Une orientation est/ouest conserve 75 à 85% du potentiel maximal, ce qui reste largement rentable sur la durée de vie de l'installation.</p>
+      </details>
+      <details class="faq__item" style="--i:2">
+        <summary>« Les panneaux ne se recyclent pas »</summary>
+        <p>Les filières de recyclage existent en France et récupèrent en moyenne plus de 90% des matériaux (verre, aluminium, silicium).</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS LINK -->
+<section class="section-tight crosslink" data-nav="light">
+  <div class="container crosslink__grid">
+    <a href="voitures-electriques.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(61,139,255,.12); color:#2b6fd6">À combiner</span>
+      <h3>Recharger sa voiture au soleil</h3>
+      <p>Produire et consommer sa propre électricité pour rouler quasiment sans facture.</p>
+      <span class="topic-card__link">Voir les voitures électriques →</span>
+    </a>
+    <a href="economies-energie.html" class="crosslink__card reveal">
+      <span class="tag" style="background:rgba(47,212,140,.12); color:#1b9f6b">À lire aussi</span>
+      <h3>Réduire sa consommation avant de produire</h3>
+      <p>Moins consommer rend chaque kWc solaire installé plus rentable.</p>
+      <span class="topic-card__link">Voir les économies →</span>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">Flux<span style="color:var(--accent)">.</span></div>
+      <div class="footer__nav">
+        <div>
+          <h4>Sujets</h4>
+          <a href="voitures-electriques.html">Voitures électriques</a>
+          <a href="panneaux-solaires.html">Panneaux solaires</a>
+          <a href="economies-energie.html">Économies d'énergie</a>
+        </div>
+        <div>
+          <h4>Flux</h4>
+          <a href="index.html">Accueil</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> Flux — Contenu informatif, ne remplace pas un avis professionnel.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/solar.js"></script>
+</body>
+</html>
