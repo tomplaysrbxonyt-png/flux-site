@@ -2,7 +2,7 @@
 // FLUX — widget de chat (v2 : pas de connexion visiteur)
 // =========================================================
 // À REMPLIR une fois la fonction "chat" déployée sur Supabase (voir README) :
-const CHAT_ENDPOINT = 'https://REMPLACE_PAR_TON_PROJET.supabase.co/functions/v1/chat';
+const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
 // =========================================================
 
 (function () {

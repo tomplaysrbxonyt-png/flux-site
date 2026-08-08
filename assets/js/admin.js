@@ -2,7 +2,7 @@
 // FLUX — espace admin (v2 : code secret, pas de compte)
 // =========================================================
 // À REMPLIR une fois la fonction "admin" déployée sur Supabase (voir README) :
-const ADMIN_ENDPOINT = 'https://REMPLACE_PAR_TON_PROJET.supabase.co/functions/v1/admin';
+const ADMIN_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
 // =========================================================
 
 (function () {
