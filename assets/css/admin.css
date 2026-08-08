@@ -1,0 +1,104 @@
+body.admin-body{
+  background: #0B0D10;
+  color: #F6F5F1;
+  min-height: 100vh;
+  font-family: var(--f-body);
+}
+
+.admin-shell{
+  display:none;
+  height: 100vh;
+}
+.admin-shell.is-ready{ display:flex; }
+
+/* ---- auth screen ---- */
+.admin-auth{
+  min-height: 100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding: 24px;
+}
+.admin-auth__card{
+  width: 100%; max-width: 380px;
+  background: #14171C;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 32px;
+}
+.admin-auth__card h1{ font-size: 20px; margin-bottom: 6px; }
+.admin-auth__card p{ font-size: 13.5px; color: var(--mist); margin-bottom: 20px; }
+.admin-auth__card input{
+  width:100%; background:#1D2127; border:1px solid var(--line); border-radius:10px;
+  padding: 11px 13px; color:#F6F5F1; font-size:14px; margin-bottom:10px;
+}
+.admin-auth__card button{
+  width:100%; background:#3D8BFF; border:none; border-radius:10px; padding:11px;
+  color:#06070A; font-weight:600; font-size:13.5px; cursor:pointer; margin-top: 4px;
+}
+.admin-auth__error{ font-size:12.5px; color:#FF8A8A; min-height:16px; margin-top: 4px; }
+.admin-auth__denied{ font-size:13px; color:#FF8A8A; margin-top:14px; }
+
+/* ---- shell layout ---- */
+.admin-sidebar{
+  width: 320px; flex-shrink:0;
+  border-right: 1px solid var(--line);
+  display:flex; flex-direction:column;
+  height: 100vh;
+}
+.admin-sidebar__head{ padding: 20px; border-bottom: 1px solid var(--line); }
+.admin-sidebar__head h1{ font-family: var(--f-display); font-size: 17px; }
+.admin-sidebar__head p{ font-size: 12px; color: var(--mist); margin-top:2px; }
+.admin-list{ flex:1; overflow-y:auto; }
+.admin-convo{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,.05);
+  cursor:pointer; color:#F6F5F1; position:relative;
+}
+.admin-convo:hover, .admin-convo.is-active{ background: #14171C; }
+.admin-convo__row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.admin-convo__email{ font-size: 13.5px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-convo__badge{
+  font-family: var(--f-mono); font-size: 10px; padding: 3px 7px; border-radius: 100px;
+  background: rgba(255,90,90,.15); color:#FF8A8A; flex-shrink:0;
+}
+.admin-convo__badge.is-open{ background: rgba(47,212,140,.15); color:#7CF0BC; }
+.admin-convo__preview{ font-size: 12px; color: var(--mist); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.admin-main{ flex:1; display:flex; flex-direction:column; height:100vh; }
+.admin-main__head{
+  padding: 18px 24px; border-bottom: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.admin-main__head h2{ font-size: 15px; }
+.admin-main__head p{ font-size:12px; color:var(--mist); margin-top:2px; }
+.admin-resolve{
+  background: rgba(255,255,255,.06); border:1px solid var(--line); color:#F6F5F1;
+  font-size: 12.5px; padding: 8px 14px; border-radius:100px; cursor:pointer;
+}
+.admin-resolve:hover{ background: rgba(255,255,255,.12); }
+
+.admin-thread{ flex:1; overflow-y:auto; padding: 24px; display:flex; flex-direction:column; gap:12px; }
+.admin-msg{ max-width: 62%; padding: 11px 15px; border-radius:14px; font-size:14px; line-height:1.5; }
+.admin-msg--visitor{ align-self:flex-start; background:#1D2127; }
+.admin-msg--bot{ align-self:flex-start; background:#1D2127; opacity:.75; }
+.admin-msg--admin{ align-self:flex-end; background:#2FD48C; color:#06070A; }
+.admin-msg small{ display:block; font-size:10.5px; opacity:.6; margin-top:4px; }
+
+.admin-reply{ display:flex; gap:10px; padding: 16px 24px; border-top:1px solid var(--line); }
+.admin-reply input{
+  flex:1; background:#1D2127; border:1px solid var(--line); border-radius:10px;
+  padding: 12px 14px; color:#F6F5F1; font-size:14px;
+}
+.admin-reply button{
+  background:#2FD48C; border:none; border-radius:10px; padding: 0 20px;
+  color:#06070A; font-weight:600; cursor:pointer;
+}
+
+.admin-empty{ flex:1; display:flex; align-items:center; justify-content:center; color:var(--mist); font-size:13.5px; }
+
+@media (max-width: 800px){
+  .admin-sidebar{ width: 100%; position:absolute; inset:0; z-index:2; }
+  .admin-shell.is-ready{ position:relative; }
+  .admin-main{ display:none; }
+  .admin-shell.thread-open .admin-sidebar{ display:none; }
+  .admin-shell.thread-open .admin-main{ display:flex; }
+}

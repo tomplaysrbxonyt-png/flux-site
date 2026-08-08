@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Flux Chat</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- écran de connexion -->
+<div class="admin-auth" id="adminAuth">
+  <div class="admin-auth__card">
+    <h1>Espace admin — Flux</h1>
+    <p id="adminAuthText">Connectez-vous avec l'email administrateur pour accéder aux conversations.</p>
+    <div id="adminAuthStep1">
+      <input type="email" id="adminEmail" placeholder="vous@exemple.com" autocomplete="email" />
+      <button id="adminSendCode">Recevoir mon code</button>
+    </div>
+    <div id="adminAuthStep2" style="display:none">
+      <input type="text" id="adminCode" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres" />
+      <button id="adminVerify">Valider</button>
+    </div>
+    <div class="admin-auth__error" id="adminError"></div>
+  </div>
+</div>
+
+<!-- application -->
+<div class="admin-shell" id="adminShell">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__head">
+      <h1>Conversations</h1>
+      <p id="adminCount">Chargement…</p>
+    </div>
+    <div class="admin-list" id="adminList"></div>
+  </aside>
+
+  <main class="admin-main" id="adminMain">
+    <div class="admin-empty">Sélectionnez une conversation à gauche</div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

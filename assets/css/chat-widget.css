@@ -1,0 +1,160 @@
+/* =========================================================
+   CHAT WIDGET
+   ========================================================= */
+
+.flux-chat *{ box-sizing:border-box; }
+.flux-chat{
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 900;
+  font-family: var(--f-body, 'Inter', sans-serif);
+}
+
+.flux-chat__bubble{
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3D8BFF, #2FD48C);
+  box-shadow: 0 10px 30px -8px rgba(0,0,0,.4);
+  border: none;
+  cursor: pointer;
+  display:flex; align-items:center; justify-content:center;
+  color: #06070A;
+  transition: transform .3s cubic-bezier(.16,.8,.24,1);
+}
+.flux-chat__bubble:hover{ transform: scale(1.06); }
+.flux-chat__bubble svg{ width: 24px; height: 24px; }
+.flux-chat__bubble .dot-badge{
+  position:absolute; top:-2px; right:-2px;
+  width: 12px; height: 12px; border-radius:50%;
+  background:#FF5A5A; border: 2px solid #0B0D10;
+  display:none;
+}
+.flux-chat__bubble.has-alert .dot-badge{ display:block; }
+
+.flux-chat__panel{
+  position:absolute;
+  bottom: 74px; right: 0;
+  width: 350px;
+  max-width: calc(100vw - 44px);
+  height: 500px;
+  max-height: 70vh;
+  background: #14171C;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 20px;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,.55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(16px) scale(.98);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.flux-chat.is-open .flux-chat__panel{
+  opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+
+.flux-chat__head{
+  padding: 16px 18px;
+  background: linear-gradient(120deg, #10233f, #0B0D10);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  color:#F6F5F1;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.flux-chat__head h4{ font-family: var(--f-display, sans-serif); font-size: 15px; margin:0; }
+.flux-chat__head p{ font-size: 12px; color:#9096A1; margin: 3px 0 0; }
+.flux-chat__close{
+  background:none; border:none; color:#9096A1; cursor:pointer; padding:4px;
+}
+
+.flux-chat__body{
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display:flex; flex-direction:column; gap: 10px;
+}
+
+.flux-chat__msg{
+  max-width: 84%;
+  padding: 10px 13px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.flux-chat__msg--visitor{
+  align-self: flex-end;
+  background: #3D8BFF;
+  color: #06070A;
+  border-bottom-right-radius: 4px;
+}
+.flux-chat__msg--bot, .flux-chat__msg--admin{
+  align-self: flex-start;
+  background: #1D2127;
+  color: #F6F5F1;
+  border-bottom-left-radius: 4px;
+}
+.flux-chat__msg--admin{ border: 1px solid rgba(47,212,140,.4); }
+.flux-chat__msg--system{
+  align-self:center;
+  font-size: 11.5px;
+  color: #9096A1;
+  text-align:center;
+}
+
+.flux-chat__typing{ align-self:flex-start; display:flex; gap:4px; padding: 10px 13px; }
+.flux-chat__typing span{
+  width:5px; height:5px; border-radius:50%; background:#9096A1;
+  animation: fluxTyping 1.1s infinite ease-in-out;
+}
+.flux-chat__typing span:nth-child(2){ animation-delay:.15s; }
+.flux-chat__typing span:nth-child(3){ animation-delay:.3s; }
+@keyframes fluxTyping{ 0%,60%,100%{ opacity:.3; transform:translateY(0); } 30%{ opacity:1; transform:translateY(-3px); } }
+
+.flux-chat__input{
+  display:flex; gap: 8px;
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.flux-chat__input input{
+  flex:1;
+  background: #1D2127;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #F6F5F1;
+  font-size: 13.5px;
+}
+.flux-chat__input input:focus{ outline: none; border-color: #3D8BFF; }
+.flux-chat__input button{
+  background: #3D8BFF; border:none; border-radius: 10px; width: 40px;
+  color:#06070A; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.flux-chat__input button:disabled{ opacity:.4; cursor:default; }
+
+/* ---- auth screen ---- */
+.flux-chat__auth{
+  flex:1; display:flex; flex-direction:column; justify-content:center;
+  padding: 24px; gap: 14px; color:#F6F5F1;
+}
+.flux-chat__auth p{ font-size: 13px; color:#9096A1; line-height:1.5; }
+.flux-chat__auth input{
+  background: #1D2127; border: 1px solid rgba(255,255,255,.1); border-radius: 10px;
+  padding: 11px 13px; color:#F6F5F1; font-size: 14px; width:100%;
+}
+.flux-chat__auth input:focus{ outline:none; border-color:#3D8BFF; }
+.flux-chat__auth button{
+  background: #3D8BFF; border:none; border-radius: 10px; padding: 11px; color:#06070A;
+  font-weight:600; font-size: 13.5px; cursor:pointer;
+}
+.flux-chat__auth button:disabled{ opacity:.5; cursor:default; }
+.flux-chat__auth-error{ font-size:12.5px; color:#FF8A8A; min-height: 14px; }
+.flux-chat__auth-link{ background:none !important; color:#7AB8FF !important; padding:0 !important; font-weight:500 !important; text-align:left; }
+
+.flux-chat__loading{ flex:1; display:flex; align-items:center; justify-content:center; color:#9096A1; font-size:13px; }
+
+@media (max-width: 480px){
+  .flux-chat{ right: 14px; bottom: 14px; }
+  .flux-chat__panel{ width: calc(100vw - 28px); height: 65vh; }
+}
