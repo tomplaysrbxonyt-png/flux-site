@@ -1,13 +1,22 @@
 -- =========================================================
--- Flux — schéma du chatbot (à coller dans Supabase → SQL Editor)
+-- Flux — schéma du chatbot (v2 : sans connexion visiteur)
+-- À coller dans Supabase → SQL Editor → Run.
+-- Sans danger si tu avais déjà exécuté l'ancienne version avant.
 -- =========================================================
 
 create extension if not exists pgcrypto;
 
+-- ---------- nettoyage de l'ancienne version (sans risque si elle n'existe pas) ----------
+drop policy if exists "select own or admin - conversations" on conversations;
+drop policy if exists "insert own - conversations" on conversations;
+drop policy if exists "update own or admin - conversations" on conversations;
+drop policy if exists "select own or admin - messages" on messages;
+drop policy if exists "insert own or admin - messages" on messages;
+
+-- ---------- tables ----------
 create table if not exists conversations (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) not null,
-  visitor_email text not null,
+  id uuid primary key,
+  visitor_email text,
   status text not null default 'open' check (status in ('open','needs_human','closed')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -21,47 +30,13 @@ create table if not exists messages (
   created_at timestamptz not null default now()
 );
 
--- ---------- Sécurité (RLS) ----------
--- Un visiteur ne voit / n'écrit que dans SES conversations.
--- L'admin (ton email) voit et écrit dans TOUT, automatiquement,
--- grâce à ces mêmes règles (pas besoin d'une page "protégée" côté code,
--- la sécurité est faite au niveau de la base de données).
+-- si la table existait déjà depuis l'ancienne version : on retire la dépendance aux comptes
+alter table conversations drop column if exists user_id;
+alter table conversations alter column visitor_email drop not null;
 
+-- ---------- sécurité ----------
+-- RLS activée mais SANS règle pour "anon" : personne ne peut lire/écrire
+-- directement depuis le navigateur. Tout passe par les fonctions serveur
+-- (chat / admin), qui utilisent une clé privée jamais exposée au public.
 alter table conversations enable row level security;
 alter table messages enable row level security;
-
-create policy "select own or admin - conversations"
-on conversations for select
-using (auth.uid() = user_id or auth.jwt() ->> 'email' = 'devt23773@gmail.com');
-
-create policy "insert own - conversations"
-on conversations for insert
-with check (auth.uid() = user_id);
-
-create policy "update own or admin - conversations"
-on conversations for update
-using (auth.uid() = user_id or auth.jwt() ->> 'email' = 'devt23773@gmail.com');
-
-create policy "select own or admin - messages"
-on messages for select
-using (
-  exists (
-    select 1 from conversations c
-    where c.id = conversation_id
-    and (c.user_id = auth.uid() or auth.jwt() ->> 'email' = 'devt23773@gmail.com')
-  )
-);
-
-create policy "insert own or admin - messages"
-on messages for insert
-with check (
-  exists (
-    select 1 from conversations c
-    where c.id = conversation_id
-    and (c.user_id = auth.uid() or auth.jwt() ->> 'email' = 'devt23773@gmail.com')
-  )
-);
-
--- ---------- Temps réel (pour le live chat) ----------
-alter publication supabase_realtime add table messages;
-alter publication supabase_realtime add table conversations;

@@ -79,53 +79,39 @@ DNS indiqué par GitHub chez votre registrar.
 
 ---
 
-## Chatbot IA + espace admin (100% gratuit)
+## Chatbot IA + espace admin (100% gratuit, sans compte visiteur)
 
-Un site sur GitHub Pages ne fait qu'afficher des fichiers — il ne peut pas
-exécuter de code serveur, envoyer d'email ou vérifier un mot de passe.
-Le chatbot utilise donc **Supabase**, une plateforme gratuite qui fournit
-en un seul endroit : la base de données, les comptes visiteurs (connexion
-par code email, sans mot de passe), le "temps réel" pour le chat en direct,
-et l'exécution de code serveur (pour appeler l'IA et envoyer les emails).
+Le chat ne demande **rien** au visiteur pour discuter — il est identifié par un
+identifiant anonyme stocké dans son navigateur. Son email n'est demandé **que**
+si l'IA doit transmettre la question à un humain. L'espace admin est protégé
+par un **code secret** que tu choisis toi-même (pas de compte à créer).
 
 **Services utilisés, tous gratuits pour un petit site :**
-- [Supabase](https://supabase.com) — base de données + comptes + temps réel + fonctions serveur
-- [Groq](https://console.groq.com) — l'IA qui répond aux visiteurs (modèle Llama, gratuit, très rapide)
+- [Supabase](https://supabase.com) — base de données + exécution du code serveur (fonctions)
+- [Groq](https://console.groq.com) — l'IA qui répond aux visiteurs (modèle Llama, gratuit, rapide)
 - [Resend](https://resend.com) — l'envoi de l'email à `devt23773@gmail.com` quand l'IA ne sait pas répondre
 
 ### 1. Créer le projet Supabase
 
 1. Va sur https://supabase.com → crée un compte → **New project**
-2. Choisis un nom, un mot de passe de base de données (à garder de côté), une région proche de toi
-3. Une fois le projet créé, va dans **SQL Editor** → colle tout le contenu du fichier
-   `supabase/schema.sql` (fourni dans le zip) → **Run**. Ça crée les tables et les règles de sécurité.
-4. Va dans **Project Settings → API** : note deux valeurs, tu en auras besoin partout ensuite :
-   - **Project URL**
-   - **anon public key**
+2. Une fois créé : **SQL Editor** → colle tout le contenu de `supabase/schema.sql` → **Run**
+3. Va dans **Project Settings → API**, note ton **Project URL** (ex: `https://abcdefgh.supabase.co`) — c'est tout ce dont tu as besoin de cette page, plus besoin d'aucune clé ici.
 
-### 2. Configurer la connexion par code email
+### 2. Créer la clé Groq (l'IA, gratuite)
 
-1. Toujours dans Supabase : **Authentication → Providers → Email**
-2. Vérifie que "Email" est activé et que **"Confirm email"** utilise bien le modèle **OTP** (code à 6 chiffres) —
-   c'est le comportement par défaut de `signInWithOtp`, rien à changer normalement.
-3. (Optionnel) **Authentication → Email Templates → Magic Link / OTP** pour personnaliser le texte de l'email reçu par les visiteurs.
+https://console.groq.com → compte → **API Keys → Create API Key** → copie la clé.
 
-### 3. Créer la clé Groq (l'IA, gratuite)
+### 3. Créer la clé Resend (l'envoi d'email, gratuit)
 
-1. Va sur https://console.groq.com → crée un compte → **API Keys → Create API Key**
-2. Copie la clé (elle ne sera plus affichée après)
+https://resend.com → compte → **API Keys → Create API Key** → copie la clé.
+Pas besoin de connecter de domaine pour commencer (`onboarding@resend.dev` fonctionne directement).
 
-### 4. Créer la clé Resend (l'envoi d'email, gratuit)
+### 4. Choisir ton code admin
 
-1. Va sur https://resend.com → crée un compte → **API Keys → Create API Key**
-2. Copie la clé. Pas besoin de connecter un nom de domaine pour commencer :
-   le champ `from` de la fonction utilise `onboarding@resend.dev`, qui fonctionne
-   sans configuration (limité mais suffisant pour démarrer). Tu pourras brancher
-   `flux-informations.com` plus tard dans Resend pour un email plus pro.
+Choisis toi-même un code secret pour accéder à `/admin.html` — une phrase ou une suite
+de caractères que tu es seul à connaître (pas besoin d'email, pas de compte).
 
-### 5. Déployer la fonction serveur (Edge Function)
-
-Il faut l'outil en ligne de commande Supabase (une seule fois) :
+### 5. Installer l'outil Supabase et déployer les 2 fonctions
 
 ```bash
 npm install -g supabase
@@ -133,53 +119,54 @@ supabase login
 cd flux-site
 supabase link --project-ref TON_PROJECT_REF
 ```
-(`TON_PROJECT_REF` est visible dans l'URL de ton projet Supabase : `https://supabase.com/dashboard/project/TON_PROJECT_REF`)
+(`TON_PROJECT_REF` = la partie avant `.supabase.co` dans ton Project URL)
 
-Puis renseigne les secrets (remplace par tes vraies clés) :
+Renseigne tes secrets :
 
 ```bash
 supabase secrets set GROQ_API_KEY=ta_cle_groq
 supabase secrets set RESEND_API_KEY=ta_cle_resend
+supabase secrets set ADMIN_CODE=ton_code_secret_admin
 ```
 
-Et déploie la fonction :
+Déploie les deux fonctions — **le `--no-verify-jwt` est important**, il évite tout
+système d'authentification technique inutile ici :
 
 ```bash
-supabase functions deploy chat
+supabase functions deploy chat --no-verify-jwt
+supabase functions deploy admin --no-verify-jwt
 ```
 
-### 6. Brancher le site sur Supabase
+### 6. Brancher le site
 
-Ouvre ces deux fichiers et remplace les deux lignes en haut par tes vraies valeurs
-(Project URL et anon public key notées à l'étape 1) :
-- `assets/js/chat-widget.js`
-- `assets/js/admin.js`
-
+Ouvre `assets/js/chat-widget.js`, remplace la ligne du haut par ton URL de fonction :
 ```js
-const SUPABASE_URL = 'https://xxxxx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOi...';
+const CHAT_ENDPOINT = 'https://abcdefgh.supabase.co/functions/v1/chat';
 ```
 
-Envoie ensuite les changements sur GitHub (`git add . && git commit -m "config chat" && git push`) — le site se met à jour automatiquement.
+Ouvre `assets/js/admin.js`, fais pareil :
+```js
+const ADMIN_ENDPOINT = 'https://abcdefgh.supabase.co/functions/v1/admin';
+```
+
+Envoie sur GitHub :
+```bash
+git add .
+git commit -m "config chat v2"
+git push
+```
 
 ### 7. Tester
 
-- Sur le site public : la bulle de chat en bas à droite → entrer un email → coller le code
-  reçu → poser une question sur les voitures électriques/le solaire/les économies. L'IA répond.
-- Pose une question hors-sujet ou demande "je veux parler à quelqu'un" → l'IA bascule la conversation,
-  un email arrive sur `devt23773@gmail.com` avec la question complète.
-- Va sur `https://TON-SITE/admin.html`, connecte-toi avec **devt23773@gmail.com** (le seul compte
-  autorisé à voir toutes les conversations — la sécurité est appliquée au niveau de la base de
-  données, pas seulement dans le code, donc même en trichant côté navigateur personne d'autre
-  ne peut y accéder), et réponds en direct : le visiteur voit la réponse apparaître instantanément
-  dans son chat.
+- Bulle de chat en bas à droite → poser directement une question, sans rien remplir.
+- Poser une question hors-sujet ou écrire "je veux parler à quelqu'un" → le bot demande
+  un email → le donner → un email arrive sur `devt23773@gmail.com` avec la question.
+- Aller sur `https://TON-SITE/admin.html` → entrer ton code admin → la conversation
+  apparaît (mise à jour toutes les quelques secondes) → répondre → la réponse apparaît
+  dans le chat du visiteur en quelques secondes, sans qu'il ait besoin de recharger la page.
 
-### Limites du plan gratuit (largement suffisant pour un site qui démarre)
+### Limites du plan gratuit
 
-- Supabase : 50 000 connexions/mois, 500 Mo de base de données, fonctions serveur incluses
-- Groq : limite de requêtes par minute généreuse pour un site à faible trafic
+- Supabase : fonctions serveur incluses, largement suffisant pour un site qui démarre
+- Groq : limite de requêtes par minute généreuse pour un faible trafic
 - Resend : 100 emails/jour, 3 000/mois
-
-Si le site grossit beaucoup, chacun de ces plans peut être payant à la carte —
-mais pour démarrer, tout reste à 0 €.
-
