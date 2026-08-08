@@ -9,7 +9,7 @@ const ADMIN_CODE = Deno.env.get('ADMIN_CODE')!
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type',
+  'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
 }
 
 function json(obj: unknown, status = 200) {
