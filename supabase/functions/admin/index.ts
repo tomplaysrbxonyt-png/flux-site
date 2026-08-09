@@ -1,5 +1,5 @@
-// Fonction Supabase Edge "admin" — liste / lit / répond aux conversations.
-// Protégée par un code secret (ADMIN_CODE), pas par un compte.
+// Fonction Supabase Edge "admin" — liste / lit / répond aux conversations,
+// gère les dossiers et le statut. Protégée par un code secret (ADMIN_CODE).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -11,6 +11,8 @@ const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
 }
+
+const VALID_STATUS = ['open', 'needs_human', 'closed']
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json' } })
@@ -45,12 +47,31 @@ Deno.serve(async (req) => {
       const content = (body.message || '').trim()
       if (!content) return json({ error: 'empty message' }, 400)
       await db.from('messages').insert({ conversation_id: body.conversationId, sender: 'admin', content })
-      await db.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', body.conversationId)
+      // dès qu'un humain répond, l'IA ne doit plus jamais reprendre la main
+      // toute seule sur cette conversation (il faudra cliquer "Repasser à l'IA").
+      await db
+        .from('conversations')
+        .update({ status: 'needs_human', updated_at: new Date().toISOString() })
+        .eq('id', body.conversationId)
       return json({ ok: true })
     }
 
-    if (body.action === 'resolve') {
-      await db.from('conversations').update({ status: 'open', updated_at: new Date().toISOString() }).eq('id', body.conversationId)
+    // changer le statut : 'open' (repasser à l'IA), 'needs_human' (rouvrir), 'closed' (terminé)
+    if (body.action === 'set-status') {
+      if (!VALID_STATUS.includes(body.status)) return json({ error: 'invalid status' }, 400)
+      await db
+        .from('conversations')
+        .update({ status: body.status, updated_at: new Date().toISOString() })
+        .eq('id', body.conversationId)
+      return json({ ok: true })
+    }
+
+    // déplacer une conversation dans un dossier (texte libre, null = sans dossier)
+    if (body.action === 'set-folder') {
+      await db
+        .from('conversations')
+        .update({ folder: body.folder || null })
+        .eq('id', body.conversationId)
       return json({ ok: true })
     }
 

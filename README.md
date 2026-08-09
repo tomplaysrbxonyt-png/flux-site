@@ -170,3 +170,67 @@ git push
 - Supabase : fonctions serveur incluses, largement suffisant pour un site qui démarre
 - Groq : limite de requêtes par minute généreuse pour un faible trafic
 - Resend : 100 emails/jour, 3 000/mois
+
+---
+
+## Notifications push gratuites sur ton téléphone (ntfy.sh)
+
+Pas de compte, pas de carte bancaire, pas de limite gênante. Voici comment l'activer :
+
+### 1. Installer l'application
+
+- **Android** : [ntfy sur le Play Store](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
+- **iPhone** : [ntfy sur l'App Store](https://apps.apple.com/us/app/ntfy/id1625396347)
+
+### 2. Choisir un nom de "canal" secret
+
+C'est comme une adresse privée pour tes notifications — n'importe qui connaissant ce nom
+exact pourrait voir tes alertes, donc choisis quelque chose long et impossible à deviner.
+Exemple : `flux-alertes-8f2x91qz`
+
+### 3. S'abonner dans l'app
+
+Ouvre l'app ntfy → **+** (Subscribe to topic) → colle exactement le même nom que tu as choisi
+→ Subscribe. C'est tout, aucun compte à créer.
+
+### 4. Brancher ce nom sur le site
+
+Dans le terminal :
+```bash
+supabase secrets set NTFY_TOPIC=flux-alertes-8f2x91qz
+supabase functions deploy chat --no-verify-jwt
+```
+
+Désormais, à chaque fois qu'une conversation a besoin d'un humain, tu reçois à la fois
+un email **et** une notification sur ton téléphone, en quelques secondes.
+
+### Et le SMS classique, si tu préfères ?
+
+C'est possible via [Twilio](https://www.twilio.com), mais sois prévenu : ce n'est jamais
+gratuit indéfiniment. Twilio offre un crédit d'essai (environ 15$), après quoi chaque SMS
+coûte environ 0,07€ et la location du numéro d'envoi environ 1€/mois — il faut renseigner
+une carte bancaire, et **ça débite** une fois le crédit d'essai épuisé (les montants restent
+faibles pour un petit volume, mais ce n'est pas gratuit à vie comme ntfy). Dis-moi si tu veux
+que je l'ajoute en plus malgré tout.
+
+---
+
+## Nouveautés de cette version
+
+- **Correction** : un message envoyé n'apparaît plus en double dans le chat.
+- **IA verrouillée après intervention humaine** : dès qu'un admin répond à une conversation,
+  l'IA ne reprend plus jamais la main automatiquement — il faut cliquer "Repasser à l'IA".
+- **Boutons admin** : "Repasser à l'IA", "Marquer terminé", "Rouvrir" selon le statut de
+  la conversation.
+- **Dossiers** : dans l'espace admin, crée des dossiers ("+ Dossier") et déplace chaque
+  conversation dedans via le petit menu déroulant à droite de chaque conversation dans
+  la liste. Filtre la liste en cliquant sur un dossier en haut de la barre latérale.
+- **Notifications push gratuites** (ntfy.sh) en plus de l'email — voir ci-dessus.
+
+N'oublie pas de redéployer les 2 fonctions après avoir remplacé les fichiers :
+```bash
+supabase functions deploy chat --no-verify-jwt
+supabase functions deploy admin --no-verify-jwt
+```
+Et de relancer `supabase/schema.sql` dans le SQL Editor (ajoute la colonne "dossier",
+sans danger à relancer).

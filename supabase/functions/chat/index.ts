@@ -1,12 +1,14 @@
 // Fonction Supabase Edge "chat" — v2, sans authentification visiteur.
 // Le visiteur est identifié uniquement par un identifiant de conversation
 // aléatoire généré dans son navigateur (localStorage). L'IA répond ;
-// si elle ne peut pas, on demande l'email au visiteur puis on prévient l'admin.
+// si elle ne peut pas, on demande l'email au visiteur, on prévient l'admin
+// par email ET par notification push gratuite (ntfy.sh, si configuré).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY')!
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
+const NTFY_TOPIC = Deno.env.get('NTFY_TOPIC') // optionnel — notification push gratuite
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ADMIN_EMAIL = 'devt23773@gmail.com'
@@ -32,6 +34,7 @@ function json(obj: unknown, status = 200) {
 }
 
 async function notifyAdmin(email: string, conversationId: string, question: string) {
+  // email (toujours)
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -42,6 +45,23 @@ async function notifyAdmin(email: string, conversationId: string, question: stri
       text: `Email visiteur : ${email}\nID conversation : ${conversationId}\n\nQuestion :\n${question}\n\nRépondre depuis /admin.html`,
     }),
   })
+
+  // notification push gratuite (si un topic ntfy.sh est configuré)
+  if (NTFY_TOPIC) {
+    try {
+      await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+        method: 'POST',
+        headers: {
+          'Title': 'Nouvelle question — Flux',
+          'Priority': 'high',
+          'Tags': 'speech_balloon',
+        },
+        body: `${email}\n\n${question}`,
+      })
+    } catch (_e) {
+      // une notification push manquée n'empêche pas le reste de fonctionner
+    }
+  }
 }
 
 Deno.serve(async (req) => {
@@ -92,8 +112,10 @@ Deno.serve(async (req) => {
 
     await db.from('messages').insert({ conversation_id: conversationId, sender: 'visitor', content: message })
 
-    // un humain gère déjà cette conversation : l'IA ne répond plus
-    if (convo.status === 'needs_human') {
+    // dès qu'un humain gère la conversation (needs_human OU closed rouvert manuellement),
+    // l'IA ne répond plus tant que l'admin n'a pas explicitement cliqué "Repasser à l'IA"
+    if (convo.status === 'needs_human' || convo.status === 'closed') {
+      await db.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId)
       return json({ human: true })
     }
 

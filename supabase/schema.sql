@@ -34,9 +34,20 @@ create table if not exists messages (
 alter table conversations drop column if exists user_id;
 alter table conversations alter column visitor_email drop not null;
 
+-- dossiers pour organiser les conversations dans l'espace admin (texte libre)
+alter table conversations add column if not exists folder text;
+
+-- ---------- dossiers ----------
+create table if not exists folders (
+  name text primary key,
+  created_at timestamptz not null default now()
+);
+alter table conversations add column if not exists folder text references folders(name) on delete set null;
+
 -- ---------- sécurité ----------
 -- RLS activée mais SANS règle pour "anon" : personne ne peut lire/écrire
 -- directement depuis le navigateur. Tout passe par les fonctions serveur
 -- (chat / admin), qui utilisent une clé privée jamais exposée au public.
 alter table conversations enable row level security;
 alter table messages enable row level security;
+alter table folders enable row level security;

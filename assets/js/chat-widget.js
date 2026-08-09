@@ -2,8 +2,8 @@
 // FLUX — widget de chat (v2 : pas de connexion visiteur)
 // =========================================================
 // À REMPLIR une fois la fonction "chat" déployée sur Supabase (voir README) :
-const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2bW92b2p3d2lleXRqaHN6a2ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODI5NTUsImV4cCI6MjEwMTc1ODk1NX0.VjVLICZabfq7f2qwiV8RknHjODyjym0lT6viaHFBc7I';
+const CHAT_ENDPOINT = 'https://REMPLACE_PAR_TON_PROJET.supabase.co/functions/v1/chat';
+const SUPABASE_ANON_KEY = 'REMPLACE_PAR_TA_CLE_ANON_PUBLIQUE';
 // =========================================================
 
 (function () {
@@ -26,13 +26,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     const res = await fetch(CHAT_ENDPOINT, {
       method: 'POST',
       headers: {
-     'Content-Type': 'application/json',
-     'apikey': SUPABASE_ANON_KEY,
-     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-   },
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      },
       body: JSON.stringify({ conversationId, ...payload }),
     });
     return res.json();
+
   }
 
   // ---------- build DOM ----------
@@ -147,16 +148,16 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
-    appendMessage({ id: 'local-' + Date.now(), sender: 'visitor', content: text });
     showTyping();
     pendingQuestion = text;
     try {
       const data = await callFn({ action: 'send', message: text });
       removeTyping();
+      // on ne dessine pas le message tout de suite : pollOnce() va le récupérer
+      // depuis la base (avec son vrai identifiant) — ça évite tout doublon.
+      await pollOnce();
       if (data.needEmail) {
         showEmailPrompt();
-      } else {
-        pollOnce();
       }
     } catch (e) {
       removeTyping();
