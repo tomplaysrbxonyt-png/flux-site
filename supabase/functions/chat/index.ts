@@ -1,8 +1,6 @@
-// Fonction Supabase Edge "chat" — v2, sans authentification visiteur.
-// Le visiteur est identifié uniquement par un identifiant de conversation
-// aléatoire généré dans son navigateur (localStorage). L'IA répond ;
-// si elle ne peut pas, on demande l'email au visiteur, on prévient l'admin
-// par email ET par notification push gratuite (ntfy.sh, si configuré).
+// Fonction Supabase Edge "chat" — v3.
+// Sans authentification visiteur, indicateur "en train d'écrire",
+// notation après clôture, notification email + push (ntfy.sh).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -12,6 +10,7 @@ const NTFY_TOPIC = Deno.env.get('NTFY_TOPIC') // optionnel — notification push
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ADMIN_EMAIL = 'devt23773@gmail.com'
+const TYPING_WINDOW_MS = 4000 // au-delà, on considère que la personne a arrêté d'écrire
 
 const SYSTEM_PROMPT = `Tu es l'assistant du site "Flux", qui informe sur trois sujets uniquement :
 1. Les voitures électriques (autonomie, recharge, coûts, environnement)
@@ -33,8 +32,12 @@ function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json' } })
 }
 
+function isRecent(ts: string | null) {
+  if (!ts) return false
+  return Date.now() - new Date(ts).getTime() < TYPING_WINDOW_MS
+}
+
 async function notifyAdmin(email: string, conversationId: string, question: string) {
-  // email (toujours)
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -44,23 +47,14 @@ async function notifyAdmin(email: string, conversationId: string, question: stri
       subject: 'Nouvelle question sans réponse — Flux chat',
       text: `Email visiteur : ${email}\nID conversation : ${conversationId}\n\nQuestion :\n${question}\n\nRépondre depuis /admin.html`,
     }),
-  })
+  }).catch(() => {})
 
-  // notification push gratuite (si un topic ntfy.sh est configuré)
   if (NTFY_TOPIC) {
-    try {
-      await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
-        method: 'POST',
-        headers: {
-          'Title': 'Nouvelle question — Flux',
-          'Priority': 'high',
-          'Tags': 'speech_balloon',
-        },
-        body: `${email}\n\n${question}`,
-      })
-    } catch (_e) {
-      // une notification push manquée n'empêche pas le reste de fonctionner
-    }
+    await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+      method: 'POST',
+      headers: { 'Title': 'Nouvelle question — Flux', 'Priority': 'high', 'Tags': 'speech_balloon' },
+      body: `${email}\n\n${question}`,
+    }).catch(() => {})
   }
 }
 
@@ -76,22 +70,37 @@ Deno.serve(async (req) => {
 
     let { data: convo } = await db.from('conversations').select('*').eq('id', conversationId).maybeSingle()
     if (!convo) {
-      const { data: created } = await db
-        .from('conversations')
-        .insert({ id: conversationId })
-        .select('*')
-        .single()
+      const { data: created } = await db.from('conversations').insert({ id: conversationId }).select('*').single()
       convo = created
     }
 
-    // ---- le widget récupère l'historique / les nouveaux messages ----
+    // ---- le visiteur est en train de taper ----
+    if (action === 'typing') {
+      await db.from('conversations').update({ visitor_typing_at: new Date().toISOString() }).eq('id', conversationId)
+      return json({ ok: true })
+    }
+
+    // ---- historique / nouveaux messages + indicateur de saisie admin ----
     if (action === 'poll') {
       const { data: messages } = await db
         .from('messages')
         .select('*')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true })
-      return json({ messages: messages ?? [], status: convo.status })
+      return json({
+        messages: messages ?? [],
+        status: convo.status,
+        adminTyping: isRecent(convo.admin_typing_at),
+        rating: convo.rating,
+      })
+    }
+
+    // ---- le visiteur note la conversation après clôture ----
+    if (action === 'rate') {
+      const rating = Number(body.rating)
+      if (!rating || rating < 1 || rating > 5) return json({ error: 'invalid rating' }, 400)
+      await db.from('conversations').update({ rating }).eq('id', conversationId)
+      return json({ ok: true })
     }
 
     // ---- le visiteur vient de donner son email pour qu'on le rappelle ----
@@ -112,8 +121,7 @@ Deno.serve(async (req) => {
 
     await db.from('messages').insert({ conversation_id: conversationId, sender: 'visitor', content: message })
 
-    // dès qu'un humain gère la conversation (needs_human OU closed rouvert manuellement),
-    // l'IA ne répond plus tant que l'admin n'a pas explicitement cliqué "Repasser à l'IA"
+    // un humain gère déjà cette conversation (ou elle est clôturée) : l'IA ne répond plus
     if (convo.status === 'needs_human' || convo.status === 'closed') {
       await db.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId)
       return json({ human: true })
@@ -140,7 +148,6 @@ Deno.serve(async (req) => {
     const answer = (groqData.choices?.[0]?.message?.content ?? 'ESCALATE').trim()
 
     if (answer.toUpperCase().startsWith('ESCALATE')) {
-      // si on a déjà l'email du visiteur (échange précédent), on transmet tout de suite
       if (convo.visitor_email) {
         await db.from('conversations').update({ status: 'needs_human', updated_at: new Date().toISOString() }).eq('id', conversationId)
         const botMsg = "Je transmets votre question à un membre de l'équipe — vous recevrez une réponse ici même très bientôt."
@@ -148,7 +155,6 @@ Deno.serve(async (req) => {
         await notifyAdmin(convo.visitor_email, conversationId, message)
         return json({ answer: botMsg, escalated: true })
       }
-      // sinon on demande l'email au visiteur avant de transmettre
       return json({ needEmail: true })
     }
 

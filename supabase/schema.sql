@@ -37,6 +37,13 @@ alter table conversations alter column visitor_email drop not null;
 -- dossiers pour organiser les conversations dans l'espace admin (texte libre)
 alter table conversations add column if not exists folder text;
 
+-- indicateur "en train d'écrire", des deux côtés
+alter table conversations add column if not exists visitor_typing_at timestamptz;
+alter table conversations add column if not exists admin_typing_at timestamptz;
+
+-- note laissée par le visiteur (1 à 5) après une conversation terminée
+alter table conversations add column if not exists rating int check (rating between 1 and 5);
+
 -- ---------- dossiers ----------
 create table if not exists folders (
   name text primary key,

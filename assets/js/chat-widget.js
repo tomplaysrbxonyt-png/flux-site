@@ -1,5 +1,5 @@
 // =========================================================
-// FLUX — widget de chat (v2 : pas de connexion visiteur)
+// FLUX — widget de chat (v3 : saisie en direct, note, reset après clôture)
 // =========================================================
 // À REMPLIR une fois la fonction "chat" déployée sur Supabase (voir README) :
 const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
@@ -11,7 +11,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     console.warn('Flux chat: configure CHAT_ENDPOINT dans assets/js/chat-widget.js');
   }
 
-  // identifiant de conversation propre à ce navigateur (pas de compte)
   function getConversationId() {
     let id = localStorage.getItem('fluxConversationId');
     if (!id) {
@@ -20,7 +19,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     }
     return id;
   }
-  const conversationId = getConversationId();
+  let conversationId = getConversationId();
+
+  function hasRated() { return localStorage.getItem('fluxRated:' + conversationId) === '1'; }
 
   async function callFn(payload) {
     const res = await fetch(CHAT_ENDPOINT, {
@@ -33,7 +34,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
       body: JSON.stringify({ conversationId, ...payload }),
     });
     return res.json();
-
   }
 
   // ---------- build DOM ----------
@@ -60,7 +60,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
   document.body.appendChild(root);
 
   const toggleBtn = root.querySelector('#fluxChatToggle');
-  const panel = root.querySelector('#fluxChatPanel');
   const body = root.querySelector('#fluxBody');
   const input = root.querySelector('#fluxMsgInput');
   const sendBtn = root.querySelector('#fluxSend');
@@ -68,47 +67,45 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
   let pollTimer = null;
   let opened = false;
-  let pendingQuestion = null; // question en attente d'un email pour être transmise
-
-  toggleBtn.addEventListener('click', () => {
-    root.classList.toggle('is-open');
-    if (root.classList.contains('is-open') && !opened) {
-      opened = true;
-      appendMessage({ id: 'welcome', sender: 'bot', content: "Bonjour 👋 Posez-moi une question sur les voitures électriques, le solaire ou les économies d'énergie." });
-      pollOnce();
-      pollTimer = setInterval(pollOnce, 3500);
-    }
-  });
-
-  // ---------- rendu des messages ----------
-  const seen = new Set(['welcome']);
+  let pendingQuestion = null;
+  let lastStatus = null;
+  let aiPending = false;
+  let peerTypingActive = false;
   let typingEl = null;
+  const seen = new Set();
 
+  // ---------- rendu ----------
   function appendMessage(msg) {
     if (seen.has(msg.id)) return;
     seen.add(msg.id);
-    removeTyping();
+    if (typingEl) typingEl.remove();
     const div = document.createElement('div');
     div.className = 'flux-chat__msg flux-chat__msg--' + msg.sender;
     div.textContent = msg.content;
     body.appendChild(div);
+    if (typingEl) body.appendChild(typingEl);
     body.scrollTop = body.scrollHeight;
   }
 
-  function showTyping() {
-    if (typingEl) return;
-    typingEl = document.createElement('div');
-    typingEl.className = 'flux-chat__typing';
-    typingEl.innerHTML = '<span></span><span></span><span></span>';
-    body.appendChild(typingEl);
+  function syncTypingIndicator() {
+    const shouldShow = aiPending || peerTypingActive;
+    if (shouldShow && !typingEl) {
+      typingEl = document.createElement('div');
+      typingEl.className = 'flux-chat__typing';
+      typingEl.innerHTML = '<span></span><span></span><span></span>';
+      body.appendChild(typingEl);
+    } else if (!shouldShow && typingEl) {
+      typingEl.remove();
+      typingEl = null;
+    }
     body.scrollTop = body.scrollHeight;
   }
-  function removeTyping() {
-    if (typingEl) { typingEl.remove(); typingEl = null; }
+
+  function showWelcome() {
+    appendMessage({ id: 'welcome', sender: 'bot', content: "Bonjour 👋 Posez-moi une question sur les voitures électriques, le solaire ou les économies d'énergie." });
   }
 
   function showEmailPrompt() {
-    removeTyping();
     const div = document.createElement('div');
     div.className = 'flux-chat__msg flux-chat__msg--bot';
     div.innerHTML = `
@@ -135,32 +132,99 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
   }
 
+  function showRatingPrompt() {
+    const div = document.createElement('div');
+    div.className = 'flux-chat__msg flux-chat__msg--bot';
+    div.innerHTML = `
+      <p style="margin:0 0 10px">Cette conversation est terminée. Comment évaluez-vous la réponse obtenue ?</p>
+      <div class="flux-chat__stars">${[1, 2, 3, 4, 5].map((n) => `<button data-star="${n}" aria-label="${n} étoiles">★</button>`).join('')}</div>
+    `;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    div.querySelectorAll('[data-star]').forEach((starBtn) => {
+      starBtn.addEventListener('click', async () => {
+        const rating = parseInt(starBtn.dataset.star, 10);
+        const stars = [...div.querySelectorAll('[data-star]')];
+        stars.forEach((b, i) => { b.classList.toggle('is-filled', i < rating); b.disabled = true; });
+        await callFn({ action: 'rate', rating });
+        localStorage.setItem('fluxRated:' + conversationId, '1');
+        const thanks = document.createElement('p');
+        thanks.style.cssText = 'margin-top:8px;font-size:12px;opacity:.75';
+        thanks.textContent = 'Merci pour votre retour !';
+        div.appendChild(thanks);
+      });
+    });
+  }
+
+  // ---------- ouverture / nouvelle conversation après clôture ----------
+  toggleBtn.addEventListener('click', async () => {
+    root.classList.toggle('is-open');
+    if (!root.classList.contains('is-open') || opened) return;
+    opened = true;
+
+    const data = await callFn({ action: 'poll' }).catch(() => null);
+
+    if (data && data.status === 'closed') {
+      // l'ancienne conversation est terminée : on repart de zéro pour ce visiteur
+      conversationId = crypto.randomUUID();
+      localStorage.setItem('fluxConversationId', conversationId);
+      seen.clear();
+      body.innerHTML = '';
+      lastStatus = null;
+      showWelcome();
+    } else if (data) {
+      (data.messages || []).forEach(appendMessage);
+      lastStatus = data.status;
+      if (!body.children.length) showWelcome();
+    } else {
+      showWelcome();
+    }
+
+    pollTimer = setInterval(pollOnce, 3500);
+  });
+
   // ---------- polling ----------
   async function pollOnce() {
     try {
       const data = await callFn({ action: 'poll' });
-      (data.messages || []).forEach((m) => appendMessage(m));
+      (data.messages || []).forEach(appendMessage);
+      peerTypingActive = !!data.adminTyping;
+      syncTypingIndicator();
+      if (data.status === 'closed' && lastStatus !== 'closed' && !hasRated()) {
+        showRatingPrompt();
+      }
+      lastStatus = data.status;
     } catch (e) { /* silencieux : on retentera au prochain cycle */ }
   }
+
+  // ---------- signal "en train d'écrire" (visiteur -> admin) ----------
+  let lastTypingPing = 0;
+  input.addEventListener('input', () => {
+    const now = Date.now();
+    if (now - lastTypingPing > 2000) {
+      lastTypingPing = now;
+      callFn({ action: 'typing' }).catch(() => {});
+    }
+  });
 
   // ---------- envoi ----------
   async function send() {
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
-    showTyping();
+    aiPending = true;
+    syncTypingIndicator();
     pendingQuestion = text;
     try {
       const data = await callFn({ action: 'send', message: text });
-      removeTyping();
+      aiPending = false;
       // on ne dessine pas le message tout de suite : pollOnce() va le récupérer
       // depuis la base (avec son vrai identifiant) — ça évite tout doublon.
       await pollOnce();
-      if (data.needEmail) {
-        showEmailPrompt();
-      }
+      if (data.needEmail) showEmailPrompt();
     } catch (e) {
-      removeTyping();
+      aiPending = false;
+      syncTypingIndicator();
       appendMessage({ id: 'err-' + Date.now(), sender: 'bot', content: 'Petit souci de connexion — réessayez dans un instant.' });
     }
   }

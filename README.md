@@ -234,3 +234,50 @@ supabase functions deploy admin --no-verify-jwt
 ```
 Et de relancer `supabase/schema.sql` dans le SQL Editor (ajoute la colonne "dossier",
 sans danger à relancer).
+
+---
+
+## Version 3 — saisie en direct, notation, nouvelle conversation après clôture
+
+### Ce qui a changé
+
+- **"..." animé en direct** : quand le visiteur tape, l'admin voit un indicateur dans le
+  fil ; quand l'admin tape, le visiteur voit le même indicateur dans le chat. Actualisé
+  toutes les 2-3 secondes (le site n'ayant pas de connexion permanente, ce n'est pas
+  instantané à la milliseconde près, mais l'effet est fluide en pratique).
+- **Notation après "Terminé"** : quand tu cliques "Marquer terminé", le visiteur voit
+  apparaître 5 étoiles dans son chat pour noter l'échange. La note est enregistrée
+  (visible dans la base `conversations.rating`, pas encore affichée dans l'espace admin —
+  dis-moi si tu veux que je l'ajoute à la liste).
+- **Nouvelle conversation après clôture** : si ce même visiteur revient plus tard et rouvre
+  le chat, il ne retrouve pas l'ancienne conversation clôturée — une toute nouvelle
+  conversation vierge démarre automatiquement, avec un nouveau message de bienvenue.
+
+### Pour tout mettre à jour
+
+1. Remplace tous les fichiers du zip dans ton dossier local
+2. Relance `supabase/schema.sql` dans le SQL Editor (ajoute les nouvelles colonnes,
+   sans danger à relancer)
+3. Redéploie les deux fonctions :
+   ```bash
+   supabase functions deploy chat --no-verify-jwt
+   supabase functions deploy admin --no-verify-jwt
+   ```
+4. `git add . && git commit -m "v3 : saisie en direct, notation, reset conversation" && git push`
+
+### Si les notifications push ne t'arrivent toujours pas
+
+Vérifie dans l'ordre :
+1. `supabase secrets list` → le nom `NTFY_TOPIC` doit apparaître (la valeur reste cachée, c'est normal)
+2. As-tu bien redéployé la fonction `chat` **après** avoir fait `supabase secrets set NTFY_TOPIC=...` ?
+   (`secrets set` seul ne suffit pas — il faut redéployer pour qu'elle prenne effet)
+3. Dans l'app ntfy sur ton téléphone, vérifie que tu es bien abonné au nom **exactement identique**,
+   caractère pour caractère (majuscules/minuscules comprises), à celui mis dans `NTFY_TOPIC`
+4. Vérifie que les notifications sont autorisées pour l'app ntfy dans les réglages de ton téléphone
+5. Test manuel pour isoler le problème — colle ceci dans un terminal (remplace le nom du topic) :
+   ```bash
+   curl -d "Test manuel" https://ntfy.sh/flux-alertes-8f2x91qz
+   ```
+   Si tu reçois ce test mais pas les vraies alertes → le souci vient de la fonction `chat`
+   (regarde l'onglet **Logs** de la fonction sur le dashboard Supabase pour voir l'erreur).
+   Si tu ne reçois même pas ce test → le souci vient de l'app/l'abonnement sur ton téléphone.

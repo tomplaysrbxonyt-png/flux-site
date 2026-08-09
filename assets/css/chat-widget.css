@@ -111,6 +111,15 @@
 .flux-chat__typing span:nth-child(3){ animation-delay:.3s; }
 @keyframes fluxTyping{ 0%,60%,100%{ opacity:.3; transform:translateY(0); } 30%{ opacity:1; transform:translateY(-3px); } }
 
+.flux-chat__stars{ display:flex; gap:6px; }
+.flux-chat__stars button{
+  background:none; border:none; font-size:22px; line-height:1; cursor:pointer;
+  color: rgba(255,255,255,.25); padding:2px; transition: color .15s, transform .15s;
+}
+.flux-chat__stars button:hover{ transform: scale(1.15); }
+.flux-chat__stars button.is-filled{ color:#FFB020; }
+.flux-chat__stars button:disabled{ cursor:default; }
+
 .flux-chat__input{
   display:flex; gap: 8px;
   padding: 12px;

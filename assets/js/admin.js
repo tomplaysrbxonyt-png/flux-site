@@ -241,9 +241,34 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     sendBtn.addEventListener('click', send);
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
 
+    let lastTypingPing = 0;
+    input.addEventListener('input', () => {
+      const now = Date.now();
+      if (now - lastTypingPing > 2000) {
+        lastTypingPing = now;
+        callFn({ action: 'typing', conversationId: id }).catch(() => {});
+      }
+    });
+
     await refreshThread();
     if (threadTimer) clearInterval(threadTimer);
     threadTimer = setInterval(refreshThread, 3000);
+  }
+
+  let visitorTypingEl = null;
+  function syncVisitorTyping(show) {
+    const thread = document.getElementById('adminThread');
+    if (!thread) return;
+    if (show && !visitorTypingEl) {
+      visitorTypingEl = document.createElement('div');
+      visitorTypingEl.className = 'admin-typing';
+      visitorTypingEl.innerHTML = '<span></span><span></span><span></span>';
+      thread.appendChild(visitorTypingEl);
+      thread.scrollTop = thread.scrollHeight;
+    } else if (!show && visitorTypingEl) {
+      visitorTypingEl.remove();
+      visitorTypingEl = null;
+    }
   }
 
   async function refreshThread() {
@@ -251,6 +276,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
     const data = await callFn({ action: 'thread', conversationId: activeId });
     const thread = document.getElementById('adminThread');
     if (!thread) return;
+    if (visitorTypingEl) visitorTypingEl.remove();
+    visitorTypingEl = null;
     (data.messages || []).forEach(msg => {
       if (seenThreadIds.has(msg.id)) return;
       seenThreadIds.add(msg.id);
@@ -262,6 +289,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
       div.appendChild(time);
       thread.appendChild(div);
     });
+    syncVisitorTyping(!!data.visitorTyping);
     thread.scrollTop = thread.scrollHeight;
   }
 

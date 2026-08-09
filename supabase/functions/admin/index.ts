@@ -1,11 +1,12 @@
-// Fonction Supabase Edge "admin" — liste / lit / répond aux conversations,
-// gère les dossiers et le statut. Protégée par un code secret (ADMIN_CODE).
+// Fonction Supabase Edge "admin" — v3 : dossiers, statuts, saisie en direct.
+// Protégée par un code secret (ADMIN_CODE).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ADMIN_CODE = Deno.env.get('ADMIN_CODE')!
+const TYPING_WINDOW_MS = 4000
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +17,11 @@ const VALID_STATUS = ['open', 'needs_human', 'closed']
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json' } })
+}
+
+function isRecent(ts: string | null) {
+  if (!ts) return false
+  return Date.now() - new Date(ts).getTime() < TYPING_WINDOW_MS
 }
 
 Deno.serve(async (req) => {
@@ -35,20 +41,35 @@ Deno.serve(async (req) => {
     }
 
     if (body.action === 'thread') {
-      const { data } = await db
+      const { data: messages } = await db
         .from('messages')
         .select('*')
         .eq('conversation_id', body.conversationId)
         .order('created_at', { ascending: true })
-      return json({ messages: data ?? [] })
+      const { data: convo } = await db
+        .from('conversations')
+        .select('visitor_typing_at, status, rating')
+        .eq('id', body.conversationId)
+        .maybeSingle()
+      return json({
+        messages: messages ?? [],
+        visitorTyping: isRecent(convo?.visitor_typing_at ?? null),
+        status: convo?.status,
+        rating: convo?.rating,
+      })
+    }
+
+    // l'admin est en train de taper
+    if (body.action === 'typing') {
+      await db.from('conversations').update({ admin_typing_at: new Date().toISOString() }).eq('id', body.conversationId)
+      return json({ ok: true })
     }
 
     if (body.action === 'reply') {
       const content = (body.message || '').trim()
       if (!content) return json({ error: 'empty message' }, 400)
       await db.from('messages').insert({ conversation_id: body.conversationId, sender: 'admin', content })
-      // dès qu'un humain répond, l'IA ne doit plus jamais reprendre la main
-      // toute seule sur cette conversation (il faudra cliquer "Repasser à l'IA").
+      // dès qu'un humain répond, l'IA ne reprend plus la main automatiquement
       await db
         .from('conversations')
         .update({ status: 'needs_human', updated_at: new Date().toISOString() })
@@ -56,22 +77,18 @@ Deno.serve(async (req) => {
       return json({ ok: true })
     }
 
-    // changer le statut : 'open' (repasser à l'IA), 'needs_human' (rouvrir), 'closed' (terminé)
+    // 'open' (repasser à l'IA), 'needs_human' (rouvrir), 'closed' (terminé)
     if (body.action === 'set-status') {
       if (!VALID_STATUS.includes(body.status)) return json({ error: 'invalid status' }, 400)
-      await db
-        .from('conversations')
-        .update({ status: body.status, updated_at: new Date().toISOString() })
-        .eq('id', body.conversationId)
+      const update: Record<string, unknown> = { status: body.status, updated_at: new Date().toISOString() }
+      // en clôturant, on efface une éventuelle ancienne note pour permettre une nouvelle évaluation
+      if (body.status === 'closed') update.rating = null
+      await db.from('conversations').update(update).eq('id', body.conversationId)
       return json({ ok: true })
     }
 
-    // déplacer une conversation dans un dossier (texte libre, null = sans dossier)
     if (body.action === 'set-folder') {
-      await db
-        .from('conversations')
-        .update({ folder: body.folder || null })
-        .eq('id', body.conversationId)
+      await db.from('conversations').update({ folder: body.folder || null }).eq('id', body.conversationId)
       return json({ ok: true })
     }
 
