@@ -2,8 +2,8 @@
 // FLUX — widget de chat (v2 : pas de connexion visiteur)
 // =========================================================
 // À REMPLIR une fois la fonction "chat" déployée sur Supabase (voir README) :
-const CHAT_ENDPOINT = 'https://REMPLACE_PAR_TON_PROJET.supabase.co/functions/v1/chat';
-const SUPABASE_ANON_KEY = 'REMPLACE_PAR_TA_CLE_ANON_PUBLIQUE';
+const CHAT_ENDPOINT = 'https://bvmovojwwieytjhszkfl.supabase.co/functions/v1/chat';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2bW92b2p3d2lleXRqaHN6a2ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODI5NTUsImV4cCI6MjEwMTc1ODk1NX0.VjVLICZabfq7f2qwiV8RknHjODyjym0lT6viaHFBc7I';
 // =========================================================
 
 (function () {
